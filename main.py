@@ -174,13 +174,11 @@ def main():
                 "Content-Type": "application/json",
             }
             url = "https://www.facturapi.io/v2/invoices/"
-            secret_key = os.environ['FACTURAPI_LIVE_KEY']
+            secret_key = st.secrets['FACTURAPI_LIVE_KEY']
             response = requests.post(url=url,
                                      headers=headers,
                                      data=data,
                                      auth=(secret_key, secret_key))
-            st.write(response)
-            st.write(response.content)
             if response.status_code != 200:
                 print("Error - ", response.content)
                 st.write("Hubo un error:")
