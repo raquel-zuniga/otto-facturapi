@@ -179,6 +179,8 @@ def main():
                                      headers=headers,
                                      data=data,
                                      auth=(secret_key, secret_key))
+            print(response)
+            print(response.content)
             if response.status_code != 200:
                 print("Error - ", response.content)
                 st.write("Hubo un error:")
