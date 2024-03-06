@@ -99,39 +99,24 @@ def main():
 
             # Update the 'data' dictionary with the extracted values
             data = {
-                "type":
-                "P",
+                "type": "P",
                 "complements": [{
-                    "type":
-                    "pago",
+                    "type": "pago",
                     "data": [{
-                        "payment_form":
-                        fields_dict.get('attr_FormaDePagoP'),
-                        "currency":
-                        fields_dict.get('attr_MonedaP'),
-                        "exchange":
-                        fields_dict.get('attr_TipoCambioP'),
-                        "date":
-                        fields_dict.get('attr_FechaPago'),
-                        "numOperacion":
-                        fields_dict.get('attr_NumOperacion'),
-                        "nomBancoOrdExt":
-                        fields_dict.get('attr_NomBancoOrdExt'),
+                        "payment_form": fields_dict.get('attr_FormaDePagoP'),
+                        "currency": fields_dict.get('attr_MonedaP'),
+                        "exchange": fields_dict.get('attr_TipoCambioP'),
+                        "date": fields_dict.get('attr_FechaPago'),
+                        "numOperacion": fields_dict.get('attr_NumOperacion'),
+                        "nomBancoOrdExt": fields_dict.get('attr_NomBancoOrdExt'),
                         "related_documents": [{
-                            "uuid":
-                            fields_dict.get('attr_IdDocumento'),
-                            "amount":
-                            fields_dict.get('attr_Monto'),
-                            "last_balance":
-                            fields_dict.get('attr_ImpSaldoAnt'),
-                            "currency":
-                            fields_dict.get('attr_MonedaDR'),
-                            "exchange":
-                            fields_dict.get('attr_EquivalenciaDR'),
-                            "installment":
-                            fields_dict.get('attr_NumParcialidad'),
-                            "taxability":
-                            "01",
+                            "uuid": fields_dict.get('attr_IdDocumento'),
+                            "amount": fields_dict.get('attr_Monto'),
+                            "last_balance": fields_dict.get('attr_ImpSaldoAnt'),
+                            "currency": fields_dict.get('attr_MonedaDR'),
+                            "exchange": fields_dict.get('attr_EquivalenciaDR'),
+                            "installment": fields_dict.get('attr_NumParcialidad'),
+                            "taxability": "01",
                             "taxes": []
                             # "taxes": [{
                             #     "base":
@@ -161,12 +146,9 @@ def main():
                         "country": "MEX"
                     }
                 },
-                "series":
-                "P",
-                "folio_number":
-                fields_dict.get('attr_Folio'),
-                "pdf_custom_section":
-                f"<p>Pedido #{order_number}</p>",
+                "series": "P",
+                "folio_number": fields_dict.get('attr_Folio'),
+                "pdf_custom_section": f"<p>Pedido #{order_number}</p>",
             }
 
             data = json.dumps(data)
