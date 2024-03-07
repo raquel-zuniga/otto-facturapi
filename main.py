@@ -157,6 +157,7 @@ def main():
             }
             url = "https://www.facturapi.io/v2/invoices/"
             secret_key = "sk_live_0J3nDa18dROAj9vX7EBP4x1D"
+            secret_key = "sk_live_kxjaOmXonEpV7K6gv270EbKmzKJ9BZAQd4Lrl0bR2P"
             response = requests.post(url,
                                      headers=headers,
                                      data=data,
