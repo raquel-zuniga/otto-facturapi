@@ -9,16 +9,48 @@ import os
 def extract_fields_from_xml(xml_content):
     root = ET.fromstring(xml_content)
     fields_dict = {}
+    related_documents = []
     for elem in root.iter():
         tag = elem.tag.split('}')[-1]
         attributes = {
             f'attr_{attr.split("}")[-1]}': value
             for attr, value in elem.attrib.items()
         }
+        if tag == 'DoctoRelacionado':
+            uuid = ""
+            amount = 0
+            last_balance = 0
+            currency = ""
+            exchange = 0
+            installment = 1
+            for attr, value in elem.attrib.items():
+                if attr == 'IdDocumento':
+                    uuid = value
+                if attr == 'ImpPagado':
+                    amount = value
+                if attr == 'ImpSaldoAnt':
+                    last_balance = value
+                if attr == 'MonedaDR':
+                    currency = value
+                if attr == 'EquivalenciaDR':
+                    exchange = value
+                if attr == 'NumParcialidad':
+                    installment = value
+                related_documents.append({
+                    "uuid": uuid,
+                    "amount": amount,
+                    "last_balance": last_balance,
+                    "currency": currency,
+                    "exchange": exchange,
+                    "installment": installment,
+                    "taxability": "01",
+                    "taxes": []
+                })
+                
         fields = {tag: elem.text} if elem.text else {}
         fields.update(attributes)
         fields_dict.update(fields)
-    return fields_dict
+    return fields_dict, related_documents
 
 
 def generate_txt(json_data):
@@ -95,8 +127,7 @@ def main():
             xml_content = f.read()
 
             # Extract the fields from the XML content
-            fields_dict = extract_fields_from_xml(xml_content)
-
+            fields_dict, related_documents = extract_fields_from_xml(xml_content)
             # Update the 'data' dictionary with the extracted values
             data = {
                 "type": "P",
@@ -109,25 +140,7 @@ def main():
                         "date": fields_dict.get('attr_FechaPago'),
                         "numOperacion": fields_dict.get('attr_NumOperacion'),
                         "nomBancoOrdExt": fields_dict.get('attr_NomBancoOrdExt'),
-                        "related_documents": [{
-                            "uuid": fields_dict.get('attr_IdDocumento'),
-                            "amount": fields_dict.get('attr_Monto'),
-                            "last_balance": fields_dict.get('attr_ImpSaldoAnt'),
-                            "currency": fields_dict.get('attr_MonedaDR'),
-                            "exchange": fields_dict.get('attr_EquivalenciaDR'),
-                            "installment": fields_dict.get('attr_NumParcialidad'),
-                            "taxability": "01",
-                            "taxes": []
-                            # "taxes": [{
-                            #     "base":
-                            #     decimal.Decimal(fields_dict.get('attr_BaseDR')),
-                            #     "type":
-                            #     "IVA",
-                            #     "rate":
-                            #     ".16",
-                            # }]
-                        }  #si no 
-                                              ]
+                        "related_documents": related_documents
                     }]
                 }],
                 "customer": {
@@ -179,7 +192,7 @@ def main():
                     data=response.content,
                     file_name='pago_zip.zip',
                 )
-            # return {"data": data}
+            return {"data": data}
 
 
 if __name__ == "__main__":
