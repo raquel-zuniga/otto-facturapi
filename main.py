@@ -36,16 +36,16 @@ def extract_fields_from_xml(xml_content):
                     exchange = value
                 if attr == 'NumParcialidad':
                     installment = value
-                related_documents.append({
-                    "uuid": uuid,
-                    "amount": amount,
-                    "last_balance": last_balance,
-                    "currency": currency,
-                    "exchange": exchange,
-                    "installment": installment,
-                    "taxability": "01",
-                    "taxes": []
-                })
+            related_documents.append({
+                "uuid": uuid,
+                "amount": amount,
+                "last_balance": last_balance,
+                "currency": currency,
+                "exchange": exchange,
+                "installment": installment,
+                "taxability": "01",
+                "taxes": []
+            })
                 
         fields = {tag: elem.text} if elem.text else {}
         fields.update(attributes)
