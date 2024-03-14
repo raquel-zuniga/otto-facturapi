@@ -181,8 +181,8 @@ def main():
                 "Content-Type": "application/json",
             }
             url = "https://www.facturapi.io/v2/invoices/"
-            # secret_key = "sk_live_kxjaOmXonEpV7K6gv270EbKmzKJ9BZAQd4Lrl0bR2P"
-            secret_key = "sk_test_DyGkmY0Lxo7e1EbaK9g0y08omrXpB925nO8VM43qAv"
+            secret_key = "sk_live_kxjaOmXonEpV7K6gv270EbKmzKJ9BZAQd4Lrl0bR2P"
+            # secret_key = "sk_test_DyGkmY0Lxo7e1EbaK9g0y08omrXpB925nO8VM43qAv"
             response = requests.post(url,
                                      headers=headers,
                                      data=data,
