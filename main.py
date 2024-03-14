@@ -10,12 +10,17 @@ def extract_fields_from_xml(xml_content):
     root = ET.fromstring(xml_content)
     fields_dict = {}
     related_documents = []
+    paid_total = 0
     for elem in root.iter():
         tag = elem.tag.split('}')[-1]
         attributes = {
             f'attr_{attr.split("}")[-1]}': value
             for attr, value in elem.attrib.items()
         }
+        if tag == 'Totales':
+            for attr, value in elem.attrib.items():
+                if attr == 'MontoTotalPagos':
+                    paid_total = decimal.Decimal(value)
         if tag == 'DoctoRelacionado':
             uuid = ""
             amount = 0
@@ -50,6 +55,13 @@ def extract_fields_from_xml(xml_content):
         fields = {tag: elem.text} if elem.text else {}
         fields.update(attributes)
         fields_dict.update(fields)
+    
+    document_total = 0    
+    for doc in related_documents:
+        document_total += decimal.Decimal(doc["amount"])
+    if decimal.Decimal(document_total) > decimal.Decimal(paid_total):
+        difference = decimal.Decimal(related_documents[len(related_documents) - 1]['amount']) - (decimal.Decimal(document_total) - decimal.Decimal(paid_total))
+        related_documents[len(related_documents) - 1]['amount'] = str(difference)
     return fields_dict, related_documents
 
 
@@ -169,8 +181,8 @@ def main():
                 "Content-Type": "application/json",
             }
             url = "https://www.facturapi.io/v2/invoices/"
-            secret_key = "sk_live_0J3nDa18dROAj9vX7EBP4x1D"
-            secret_key = "sk_live_kxjaOmXonEpV7K6gv270EbKmzKJ9BZAQd4Lrl0bR2P"
+            # secret_key = "sk_live_kxjaOmXonEpV7K6gv270EbKmzKJ9BZAQd4Lrl0bR2P"
+            secret_key = "sk_test_DyGkmY0Lxo7e1EbaK9g0y08omrXpB925nO8VM43qAv"
             response = requests.post(url,
                                      headers=headers,
                                      data=data,
