@@ -11,12 +11,17 @@ def extract_fields_from_xml(xml_content):
     fields_dict = {}
     related_documents = []
     paid_total = 0
+    receptor = ""
     for elem in root.iter():
         tag = elem.tag.split('}')[-1]
         attributes = {
             f'attr_{attr.split("}")[-1]}': value
             for attr, value in elem.attrib.items()
         }
+        if tag == 'Receptor':
+            for attr, value in elem.attrib.items():
+                if attr == 'RegimenFiscalReceptor':
+                    receptor = value
         if tag == 'Totales':
             for attr, value in elem.attrib.items():
                 if attr == 'MontoTotalPagos':
@@ -62,7 +67,7 @@ def extract_fields_from_xml(xml_content):
     if decimal.Decimal(document_total) > decimal.Decimal(paid_total):
         difference = decimal.Decimal(related_documents[len(related_documents) - 1]['amount']) - (decimal.Decimal(document_total) - decimal.Decimal(paid_total))
         related_documents[len(related_documents) - 1]['amount'] = str(difference)
-    return fields_dict, related_documents
+    return fields_dict, related_documents, receptor
 
 
 def generate_txt(json_data):
@@ -128,6 +133,7 @@ def main():
     # descarga del zip creado de facturapi
     st.title("XML Content Extractor")
     order_number = st.text_input(label="Order Number")
+    email = st.text_input(label="Email")
     uploaded_files = st.file_uploader("Upload XML file",
                                       type=".xml",
                                       accept_multiple_files=True)
@@ -139,7 +145,7 @@ def main():
             xml_content = f.read()
 
             # Extract the fields from the XML content
-            fields_dict, related_documents = extract_fields_from_xml(xml_content)
+            fields_dict, related_documents, receptor_fiscal_regime = extract_fields_from_xml(xml_content)
             # Update the 'data' dictionary with the extracted values
             data = {
                 "type": "P",
@@ -159,7 +165,7 @@ def main():
                     "legal_name": fields_dict.get('attr_Nombre'),
                     #"email": "mail del cliente",
                     "tax_id": fields_dict.get('attr_Rfc'),
-                    "tax_system": fields_dict.get('attr_RegimenFiscal'),
+                    "tax_system": str(receptor_fiscal_regime),#fields_dict.get('attr_RegimenFiscal'),
                     "address": {
                         "street": "calle dirección de cliente",
                         "exterior": "numero exterior de dirección del cliente",
@@ -173,7 +179,7 @@ def main():
                 },
                 "series": "P",
                 "folio_number": fields_dict.get('attr_Folio'),
-                "pdf_custom_section": f"<p>Pedido #{order_number}</p>",
+                "pdf_custom_section": f"<p>Factura #{order_number}</p>",
             }
 
             data = json.dumps(data)
@@ -181,13 +187,15 @@ def main():
                 "Content-Type": "application/json",
             }
             url = "https://www.facturapi.io/v2/invoices/"
-            secret_key = "sk_live_kxjaOmXonEpV7K6gv270EbKmzKJ9BZAQd4Lrl0bR2P"
-            # secret_key = "sk_test_DyGkmY0Lxo7e1EbaK9g0y08omrXpB925nO8VM43qAv"
+            # secret_key = "sk_live_kxjaOmXonEpV7K6gv270EbKmzKJ9BZAQd4Lrl0bR2P"
+            secret_key = "sk_test_DyGkmY0Lxo7e1EbaK9g0y08omrXpB925nO8VM43qAv"
             response = requests.post(url,
                                      headers=headers,
                                      data=data,
                                      auth=(secret_key, secret_key))
             st.write(response.content)
+            all_emails = []
+            # all_emails.append("ventas@ottodist.com.mx")
             if response.status_code != 200:
                 print("Error - ", response.content)
                 st.write("Hubo un error:")
@@ -195,6 +203,19 @@ def main():
             else:
                 data = response.json()
                 invoice_id = data["id"]
+
+                ### Email Process ###
+                
+                email_url = f"https://www.facturapi.io/v2/invoices/{invoice_id}/email"
+                all_emails.append(email)
+                email_data = {"email": all_emails}
+                email_data = json.dumps(email_data)
+                response = requests.post(
+                    email_url, headers=headers, data=email_data, auth=(secret_key, secret_key)
+                )
+
+                ### End Email Process ###
+
                 download_url = f"https://www.facturapi.io/v2/invoices/{invoice_id}/zip"
                 response = requests.get(url=download_url,
                                         auth=(secret_key, secret_key))
