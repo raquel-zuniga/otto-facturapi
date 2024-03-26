@@ -167,14 +167,7 @@ def main():
                     "tax_id": fields_dict.get('attr_Rfc'),
                     "tax_system": str(receptor_fiscal_regime),#fields_dict.get('attr_RegimenFiscal'),
                     "address": {
-                        "street": "calle dirección de cliente",
-                        "exterior": "numero exterior de dirección del cliente",
-                        "interior": "Numero interior de direccion de cliente",
-                        "neighborhood": "Colonia del cliente",
-                        "municipality": "municipio de dirección del cliente",
                         "zip": fields_dict.get('attr_DomicilioFiscalReceptor'),
-                        "state": "Calle de dirección del cliente",
-                        "country": "MEX"
                     }
                 },
                 "series": "P",
@@ -187,15 +180,15 @@ def main():
                 "Content-Type": "application/json",
             }
             url = "https://www.facturapi.io/v2/invoices/"
-            # secret_key = "sk_live_kxjaOmXonEpV7K6gv270EbKmzKJ9BZAQd4Lrl0bR2P"
-            secret_key = "sk_test_DyGkmY0Lxo7e1EbaK9g0y08omrXpB925nO8VM43qAv"
+            secret_key = "sk_live_kxjaOmXonEpV7K6gv270EbKmzKJ9BZAQd4Lrl0bR2P"
+            # secret_key = "sk_test_DyGkmY0Lxo7e1EbaK9g0y08omrXpB925nO8VM43qAv"
             response = requests.post(url,
                                      headers=headers,
                                      data=data,
                                      auth=(secret_key, secret_key))
             st.write(response.content)
             all_emails = []
-            # all_emails.append("ventas@ottodist.com.mx")
+            all_emails.append("ventas@ottodist.com.mx")
             if response.status_code != 200:
                 print("Error - ", response.content)
                 st.write("Hubo un error:")
@@ -210,9 +203,14 @@ def main():
                 all_emails.append(email)
                 email_data = {"email": all_emails}
                 email_data = json.dumps(email_data)
-                response = requests.post(
+                email_respone = requests.post(
                     email_url, headers=headers, data=email_data, auth=(secret_key, secret_key)
                 )
+
+                if email_respone.status_code != 200:
+                    print("Error - ", email_respone.content)
+                    st.write("Hubo un error enviando la factura por correo electrónico:")
+                    st.write(email_respone.json().get('message', None))
 
                 ### End Email Process ###
 
