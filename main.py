@@ -105,31 +105,49 @@ def main():
                     "type":
                     "pago",
                     "data": [{
-                        "payment_form": fields_dict.get('attr_FormaDePagoP'),
-                        "currency": fields_dict.get('attr_MonedaP'),
-                        "exchange": fields_dict.get('attr_TipoCambioP'),
-                        "date": fields_dict.get('attr_FechaPago'),
-                        "numOperacion": fields_dict.get('attr_NumOperacion'),
-                        "nomBancoOrdExt": fields_dict.get('attr_NomBancoOrdExt'),
+                        "payment_form":
+                        fields_dict.get('attr_FormaDePagoP'),
+                        "currency":
+                        fields_dict.get('attr_MonedaP'),
+                        "exchange":
+                        fields_dict.get('attr_TipoCambioP'),
+                        "date":
+                        fields_dict.get('attr_FechaPago'),
+                        "numOperacion":
+                        fields_dict.get('attr_NumOperacion'),
+                        "nomBancoOrdExt":
+                        fields_dict.get('attr_NomBancoOrdExt'),
                         "related_documents": [{
-                            "uuid": fields_dict.get('attr_IdDocumento'),
-                            "amount": fields_dict.get('attr_Monto'),
-                            "last_balance": fields_dict.get('attr_ImpSaldoAnt'),
-                            "currency": fields_dict.get('attr_MonedaDR'),
-                            "exchange": fields_dict.get('attr_EquivalenciaDR'),
-                            "installment": fields_dict.get('attr_NumParcialidad'),
-                            "taxability": "02",
-                            "taxes": [
-                                {
-                                    "base": str(round((decimal.Decimal(fields_dict.get('attr_Monto')) / decimal.Decimal(1.16)), 2)),
-                                    "type": "IVA",
-                                    "rate": 0.16,
-                                    "factor": "Tasa",
-                                    "withholding": False
-                                }
-                            ]
-                        }
-                      ]
+                            "uuid":
+                            fields_dict.get('attr_IdDocumento'),
+                            "amount":
+                            fields_dict.get('attr_Monto'),
+                            "last_balance":
+                            fields_dict.get('attr_ImpSaldoAnt'),
+                            "currency":
+                            fields_dict.get('attr_MonedaDR'),
+                            "exchange":
+                            fields_dict.get('attr_EquivalenciaDR'),
+                            "installment":
+                            fields_dict.get('attr_NumParcialidad'),
+                            "taxability":
+                            "02",
+                            "taxes": [{
+                                "base":
+                                str(
+                                    round((decimal.Decimal(
+                                        fields_dict.get('attr_Monto')) /
+                                           decimal.Decimal(1.16)), 2)),
+                                "type":
+                                "IVA",
+                                "rate":
+                                0.16,
+                                "factor":
+                                "Tasa",
+                                "withholding":
+                                False
+                            }]
+                        }]
                     }]
                 }],
                 "customer": {
@@ -161,7 +179,7 @@ def main():
                 "Content-Type": "application/json",
             }
             url = "https://www.facturapi.io/v2/invoices/"
-            secret_key = os.environ['FACTURAPI_LIVE_KEY']
+            secret_key = 'sk_live_gzyv1OpGJRn2qZ4L8KMqZJ45J4rWxBN3KdAVEQbDP5'
             response = requests.post(url=url,
                                      headers=headers,
                                      data=data,
